@@ -1,1 +1,30 @@
+name: Reusable Setup-Steps (AKA composite action)
+description: Demonstrate how to use reusable steps in a workflow
 
+inputs:
+  github_actor:
+    description: 'Name of the author'
+    required: true
+  access_token:
+    description: 'Token of the repository'
+    required: true
+
+runs:
+  using: 'composite'
+  steps:
+    - name: Set up JDK 17
+      uses: actions/setup-java@v4
+      with:
+        java-version: '17'
+        distribution: 'temurin'
+    - name: Cache Maven packages
+      uses: actions/cache@v2
+      with:
+        path: ~/.m2
+        key: ${{ runner.os }}-m2-${{ hashFiles('**/pom.xml') }}
+        restore-keys: ${{ runner.os }}-m2
+    - name: Print input params
+      shell: bash
+      run: |
+        echo "Autor: ${{ inputs.github_actor }}"
+        echo "user token: ${{ inputs.access_token }}"
